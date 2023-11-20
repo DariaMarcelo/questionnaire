@@ -1,0 +1,6 @@
+<div *ngFor="let question of questions$ | async">
+  <p>{{ question.text }} - {{ question.type }} - {{ question.dateCreated }}</p>
+  <button (click)="deleteQuestion(question.id)">Delete</button>
+  <button (click)="editQuestion(question.id)">Edit</button>
+</div>
+<button routerLink="/create-question">Create Question</button>

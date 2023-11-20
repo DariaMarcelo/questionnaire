@@ -1,0 +1,17 @@
+<form [formGroup]="questionForm">
+  <label for="text">Question Text:</label>
+  <input type="text" id="text" formControlName="text" />
+
+  <label for="type">Question Type:</label>
+  <select id="type" formControlName="type">
+    <option value="single">Single Choice</option>
+    <option value="multiple">Multiple Choice</option>
+    <option value="open">Open</option>
+  </select>
+
+  <label for="options">Answer Options:</label>
+  <input type="text" id="options" formControlName="options" />
+
+  <button type="button" (click)="createQuestion()">Create Question</button>
+</form>
+<button routerLink="/question-management">Back to Question Management</button>

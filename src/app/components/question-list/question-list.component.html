@@ -1,0 +1,36 @@
+<div class="lists-container">
+  <div class="unanswered-list">
+    <h2>Unanswered Questions</h2>
+    <div *ngFor="let question of unansweredQuestions$ | async">
+      <div class="question-card">
+        <p>{{ question.text }}</p>
+        <div *ngIf="question.type === 'single' || question.type === 'multiple'">
+          <label *ngFor="let option of question.options">
+            <input type="radio" name="{{ question.id }}" [(ngModel)]="selectedOption" /> {{ option }}
+          </label>
+        </div>
+        <div *ngIf="question.type === 'open'">
+          <input type="text" [(ngModel)]="openAnswer" />
+        </div>
+        <button (click)="createAnswer(question.id)">Create Answer</button>
+      </div>
+    </div>
+  </div>
+  <div class="answered-list">
+    <h2>Answered Questions</h2>
+    <div *ngFor="let question of answeredQuestions$ | async">
+      <div class="question-card">
+        <p>{{ question.text }}</p>
+        <div *ngIf="question.type === 'single' || question.type === 'multiple'">
+          <label *ngFor="let option of question.options">
+            <input type="radio" name="{{ question.id }}" [checked]="selectedOption === option" disabled /> {{ option }}
+          </label>
+        </div>
+        <div *ngIf="question.type === 'open'">
+          <input type="text" [value]="openAnswer" disabled />
+        </div>
+        <button (click)="rollbackAnswer(question.id)">Rollback Answer</button>
+      </div>
+    </div>
+  </div>
+</div>
