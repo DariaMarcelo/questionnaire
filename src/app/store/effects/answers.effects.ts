@@ -41,7 +41,6 @@ export class AnswersEffects {
   ) {}
 
   private updateAnswers(answers: IAnswer[], action: any): IAnswer[] {
-    console.log({ answers, action })
     switch (action.type) {
       case AnswersActions.createAnswer.type:
         return [...answers, action.answer];

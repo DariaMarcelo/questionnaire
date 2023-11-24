@@ -67,6 +67,15 @@ export class QuestionListComponent {
     this.store.dispatch(AnswerActions.createAnswer({ answer }));
   }
 
+  isAnswerValid(question: IQuestion): boolean {
+    if (question.type === 'single' || question.type === 'multiple') {
+      return this.selectedOptions[question.id] !== undefined && this.selectedOptions[question.id] !== null;
+    } else if (question.type === 'open') {
+      return this.openAnswer !== undefined && this.openAnswer.trim() !== '';
+    }
+    return true;
+  }
+
   rollbackAnswer(questionId: string): void {
     this.store.dispatch(AnswerActions.rollbackAnswer({ questionId }));
   }

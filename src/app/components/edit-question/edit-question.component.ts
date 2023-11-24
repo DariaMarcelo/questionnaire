@@ -50,12 +50,6 @@ export class EditQuestionComponent implements OnInit {
     const editedQuestion = { ...this.questionForm.value, options, dateCreated: new Date() };
 
     this.store.dispatch(QuestionActions.editQuestion({ id: this.questionId, question: editedQuestion }));
-    this.router.navigate(['/question-management'])
-      .then(() => {
-        console.log('Navigation succeeded');
-      })
-      .catch(error => {
-        console.error('Navigation failed:', error);
-      });
+    this.router.navigate(['/question-management']);
   }
 }

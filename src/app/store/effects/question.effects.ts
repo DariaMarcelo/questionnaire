@@ -32,7 +32,6 @@ export class QuestionEffects {
   ), { dispatch: false });
 
   private updateQuestions(questions: IQuestion[], action: any): IQuestion[] {
-    console.log(action, questions);
     switch (action.type) {
       case QuestionActions.addQuestion.type:
         return [...questions, action.question];

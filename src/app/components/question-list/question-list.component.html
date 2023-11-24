@@ -24,7 +24,9 @@
             <input matInput type="text" [(ngModel)]="openAnswer"/>
           </mat-form-field>
         </div>
-        <button mat-raised-button (click)="createAnswer(question.id)">Save Answer</button>
+        <button mat-raised-button (click)="createAnswer(question.id)" [disabled]="!isAnswerValid(question)">
+          Save Answer
+        </button>
       </mat-card>
     </div>
   </div>

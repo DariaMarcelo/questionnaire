@@ -31,12 +31,6 @@ export class QuestionManagementComponent {
   }
 
   editQuestion(id: string): void {
-    this.router.navigate(['edit-question', id])
-      .then(() => {
-        console.log('Navigation is complete');
-      })
-      .catch(error => {
-        console.error('Navigation failed:', error);
-      });
+    this.router.navigate(['edit-question', id]);
   }
 }
