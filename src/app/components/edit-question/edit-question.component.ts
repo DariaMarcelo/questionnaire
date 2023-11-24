@@ -30,6 +30,7 @@ export class EditQuestionComponent implements OnInit {
       switchMap(id => this.store.select('questions', 'entities', id))
     ).subscribe(question => {
       if (question) {
+        this.questionId = question.id;
         this.setFormValues(question);
       }
     });
@@ -44,7 +45,10 @@ export class EditQuestionComponent implements OnInit {
   }
 
   editQuestion(): void {
-    const editedQuestion = { ...this.questionForm.value, dateCreated: new Date() };
+    const questionFormValue = this.questionForm.value;
+    const options = questionFormValue.options?.split(',') || [];
+    const editedQuestion = { ...this.questionForm.value, options, dateCreated: new Date() };
+
     this.store.dispatch(QuestionActions.editQuestion({ id: this.questionId, question: editedQuestion }));
     this.router.navigate(['/question-management'])
       .then(() => {
