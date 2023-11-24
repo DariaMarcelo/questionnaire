@@ -1,17 +1,24 @@
 <form [formGroup]="questionForm">
-  <label for="text">Question Text:</label>
-  <input type="text" id="text" formControlName="text" />
+  <mat-form-field appearance="fill">
+    <mat-label>Question Text:</mat-label>
+    <input matInput type="text" formControlName="text" />
+  </mat-form-field>
 
-  <label for="type">Question Type:</label>
-  <select id="type" formControlName="type">
-    <option value="single">Single Choice</option>
-    <option value="multiple">Multiple Choice</option>
-    <option value="open">Open</option>
-  </select>
+  <mat-form-field appearance="fill">
+    <mat-label>Question Type:</mat-label>
+    <mat-select id="type" formControlName="type">
+      <mat-option value="single">Single Choice</mat-option>
+      <mat-option value="multiple">Multiple Choice</mat-option>
+      <mat-option value="open">Open</mat-option>
+    </mat-select>
+  </mat-form-field>
 
-  <label for="options">Answer Options:</label>
-  <input type="text" id="options" formControlName="options" />
+  <mat-form-field appearance="fill">
+    <mat-label>Answer Options:</mat-label>
+    <input matInput type="text" formControlName="options" />
+  </mat-form-field>
 
-  <button type="button" (click)="editQuestion()">Edit Question</button>
+  <button mat-raised-button type="button" (click)="editQuestion()">Edit Question</button>
 </form>
-<button routerLink="/question-management">Back to Question Management</button>
+
+<button mat-button routerLink="/question-management">Back to Question Management</button>

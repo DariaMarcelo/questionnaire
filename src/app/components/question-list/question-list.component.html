@@ -2,35 +2,55 @@
   <div class="unanswered-list">
     <h2>Unanswered Questions</h2>
     <div *ngFor="let question of unansweredQuestions$ | async">
-      <div class="question-card">
-        <p>{{ question.text }}</p>
-        <div *ngIf="question.type === 'single' || question.type === 'multiple'">
-          <label *ngFor="let option of question.options">
-            <input type="radio" name="{{ question.id }}" [(ngModel)]="selectedOption" /> {{ option }}
-          </label>
+      <mat-card class="question-card">
+        <p><b>{{ question.text }}</b></p>
+        <div *ngIf="question.type === 'single'">
+          <mat-radio-group [(ngModel)]="selectedOptions[question.id]">
+            <mat-radio-button *ngFor="let option of question.options" [value]="option">
+              {{ option }}
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div *ngIf="question.type === 'multiple'">
+          <mat-checkbox
+            *ngFor="let option of question.options"
+            (click)="setCheckboxValue(question.id, option, $event.target)"
+          >
+            {{ option }}
+          </mat-checkbox>
         </div>
         <div *ngIf="question.type === 'open'">
-          <input type="text" [(ngModel)]="openAnswer" />
+          <mat-form-field>
+            <input matInput type="text" [(ngModel)]="openAnswer"/>
+          </mat-form-field>
         </div>
-        <button (click)="createAnswer(question.id)">Create Answer</button>
-      </div>
+        <button mat-raised-button (click)="createAnswer(question.id)">Save Answer</button>
+      </mat-card>
     </div>
   </div>
   <div class="answered-list">
     <h2>Answered Questions</h2>
     <div *ngFor="let question of answeredQuestions$ | async">
-      <div class="question-card">
+      <mat-card class="question-card">
         <p>{{ question.text }}</p>
+        <!-- Todo: rewrite multiple to checkboxes -->
         <div *ngIf="question.type === 'single' || question.type === 'multiple'">
-          <label *ngFor="let option of question.options">
-            <input type="radio" name="{{ question.id }}" [checked]="selectedOption === option" disabled /> {{ option }}
-          </label>
+          <mat-radio-group [value]="selectedOptions[question.id]" disabled>
+            <mat-radio-button
+              *ngFor="let option of question.options"
+              [checked]="selectedOptions[question.id] === option"
+            >
+              {{ option }}
+            </mat-radio-button>
+          </mat-radio-group>
         </div>
         <div *ngIf="question.type === 'open'">
-          <input type="text" [value]="openAnswer" disabled />
+          <mat-form-field>
+            <input matInput type="text" [value]="openAnswer" disabled/>
+          </mat-form-field>
         </div>
-        <button (click)="rollbackAnswer(question.id)">Rollback Answer</button>
-      </div>
+        <button mat-raised-button (click)="rollbackAnswer(question.id)">Rollback Answer</button>
+      </mat-card>
     </div>
   </div>
 </div>

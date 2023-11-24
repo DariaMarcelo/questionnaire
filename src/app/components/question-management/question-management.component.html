@@ -1,6 +1,11 @@
-<div *ngFor="let question of questions$ | async">
-  <p>{{ question.text }} - {{ question.type }} - {{ question.dateCreated }}</p>
-  <button (click)="deleteQuestion(question.id)">Delete</button>
-  <button (click)="editQuestion(question.id)">Edit</button>
-</div>
-<button routerLink="/create-question">Create Question</button>
+<mat-card *ngFor="let question of questions$ | async" class="question-card">
+  <mat-card-content>
+    <p><b>{{ question.text }}</b> - {{ question.type }} - {{ question.dateCreated }}</p>
+  </mat-card-content>
+  <mat-card-actions>
+    <button class="question-card-btn" mat-button (click)="deleteQuestion(question.id)">Delete</button>
+    <button class="question-card-btn" mat-button (click)="editQuestion(question.id)">Edit</button>
+  </mat-card-actions>
+</mat-card>
+
+<button mat-raised-button routerLink="/create-question">Create Question</button>

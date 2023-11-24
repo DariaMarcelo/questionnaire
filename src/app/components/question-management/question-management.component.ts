@@ -11,6 +11,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-question-management',
   templateUrl: './question-management.component.html',
+  styleUrls: ['./question-management.component.scss'],
 })
 export class QuestionManagementComponent {
   questions$: Observable<IQuestion[]>;
@@ -26,7 +27,7 @@ export class QuestionManagementComponent {
   }
 
   deleteQuestion(id: string): void {
-    this.store.dispatch(QuestionActions.deleteQuestion({id}));
+    this.store.dispatch(QuestionActions.deleteQuestion({ id }));
   }
 
   editQuestion(id: string): void {

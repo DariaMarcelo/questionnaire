@@ -6,3 +6,11 @@ export interface IQuestion {
   options?: string[];
   answer?: string;
 }
+
+
+export interface IAnswer {
+  id: string;
+  questionId: string;
+  selectedOption?: string;
+  openAnswer?: string;
+}

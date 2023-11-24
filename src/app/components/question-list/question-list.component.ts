@@ -2,23 +2,26 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../store';
-import * as QuestionActions from '../../store/actions/question.actions';
+import * as AnswerActions from '../../store/actions/answers.actions';
 import { IQuestion } from '../../interfaces/question.interface';
 import { questionAdapter } from '../../store/reducers/question.reducer';
 import { map } from "rxjs/operators";
+import { createUniqId } from '../../utils/database.utils';
+import { FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-question-list',
   templateUrl: './question-list.component.html',
+  styleUrls: ['./question-list.component.scss'],
 })
 export class QuestionListComponent {
   unansweredQuestions$: Observable<IQuestion[]>;
   answeredQuestions$: Observable<IQuestion[]>;
 
-  selectedOption: string = '';
+  selectedOptions: { [id: string]: string } = {};
   openAnswer: string = '';
 
-  constructor(private store: Store<IAppState>) {
+  constructor(private store: Store<IAppState>, _formBuilder: FormBuilder) {
     this.unansweredQuestions$ = store.select('questions').pipe(
       map(state => questionAdapter.getSelectors().selectAll(state)),
       map(questions => questions.filter(question => !question.answer)),
@@ -30,11 +33,41 @@ export class QuestionListComponent {
     );
   }
 
+  setCheckboxValue(questionId: string, option: string, target: EventTarget | null) {
+    const { checked } = target as HTMLInputElement;
+    const currentValue = this.selectedOptions[questionId];
+
+    if (!currentValue && checked) {
+      this.selectedOptions[questionId] = option;
+      return;
+    }
+
+    if (!checked) {
+      this.selectedOptions[questionId] = currentValue
+        .split(',')
+        .filter(opt => opt !== option)
+        .join(',');
+      return;
+    }
+
+    this.selectedOptions[questionId] = `${currentValue},${option}`;
+  }
+
+  showSelectedOptions(): void {
+    console.log(this.selectedOptions)
+  }
+
   createAnswer(questionId: string): void {
-    this.store.dispatch(QuestionActions.createAnswer({ questionId, selectedOption: this.selectedOption, openAnswer: this.openAnswer }));
+    const answer = {
+      questionId,
+      selectedOption: this.selectedOptions[questionId] || '',
+      openAnswer: this.openAnswer,
+      id: createUniqId(),
+    };
+    this.store.dispatch(AnswerActions.createAnswer({ answer }));
   }
 
   rollbackAnswer(questionId: string): void {
-    this.store.dispatch(QuestionActions.rollbackAnswer({ questionId }));
+    this.store.dispatch(AnswerActions.rollbackAnswer({ questionId }));
   }
 }
