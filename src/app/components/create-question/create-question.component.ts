@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../store';
@@ -7,28 +7,30 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { switchMap, map, filter } from 'rxjs/operators';
 import { createUniqId } from '../../utils/database.utils';
 import { IQuestion } from "../../interfaces/question.interface";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: 'app-create-question',
   templateUrl: './create-question.component.html',
   styleUrls: ['./create-question.component.scss'],
 })
-export class CreateQuestionComponent implements OnInit {
+export class CreateQuestionComponent implements OnInit, OnDestroy {
   questionForm!: FormGroup;
   isEditMode: boolean = false;
   questionId: string = '';
+  private routeSubscription: Subscription = new Subscription();
 
   constructor(
     private fb: FormBuilder,
     private store: Store<IAppState>,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
     this.initForm();
 
-    this.route.params.pipe(
+    this.routeSubscription = this.route.params.pipe(
       map(params => params['id']),
       filter(Boolean),
       switchMap(id => this.store.select('questions', 'entities', id)),
@@ -37,6 +39,12 @@ export class CreateQuestionComponent implements OnInit {
       this.questionId = question.id;
       this.initForm(question);
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
+    }
   }
 
   initForm(question?: IQuestion): void {
@@ -93,3 +101,4 @@ export class CreateQuestionComponent implements OnInit {
     return true;
   }
 }
+
