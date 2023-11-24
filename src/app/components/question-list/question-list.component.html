@@ -55,7 +55,7 @@
           </mat-checkbox>
         </div>
         <div *ngIf="question.type === 'open'">
-          <mat-form-field>
+          <mat-form-field class="question-card-open-wrapper">
             <input matInput type="text" [value]="selectedOptions[question.id]" disabled/>
           </mat-form-field>
         </div>
