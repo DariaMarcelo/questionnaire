@@ -20,8 +20,8 @@
           </mat-checkbox>
         </div>
         <div *ngIf="question.type === 'open'">
-          <mat-form-field>
-            <input class="question-card-open" matInput type="text" [(ngModel)]="selectedOptions[question.id]"/>
+          <mat-form-field class="question-card-open-wrapper">
+            <input matInput type="text" [(ngModel)]="selectedOptions[question.id]"/>
           </mat-form-field>
         </div>
         <button mat-raised-button (click)="createAnswer(question)" [disabled]="!isAnswerValid(question)">
