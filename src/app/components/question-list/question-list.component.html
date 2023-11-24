@@ -21,10 +21,10 @@
         </div>
         <div *ngIf="question.type === 'open'">
           <mat-form-field>
-            <input matInput type="text" [(ngModel)]="openAnswer"/>
+            <input class="question-card-open" matInput type="text" [(ngModel)]="selectedOptions[question.id]"/>
           </mat-form-field>
         </div>
-        <button mat-raised-button (click)="createAnswer(question.id)" [disabled]="!isAnswerValid(question)">
+        <button mat-raised-button (click)="createAnswer(question)" [disabled]="!isAnswerValid(question)">
           Save Answer
         </button>
       </mat-card>
@@ -35,23 +35,31 @@
     <div *ngFor="let question of answeredQuestions$ | async">
       <mat-card class="question-card">
         <p>{{ question.text }}</p>
-        <!-- Todo: rewrite multiple to checkboxes -->
-        <div *ngIf="question.type === 'single' || question.type === 'multiple'">
-          <mat-radio-group [value]="selectedOptions[question.id]" disabled>
+        <div *ngIf="question.type === 'single'">
+          <mat-radio-group [ngModel]="selectedOptions[question.id][0]" disabled>
             <mat-radio-button
               *ngFor="let option of question.options"
-              [checked]="selectedOptions[question.id] === option"
+              [value]="option"
             >
               {{ option }}
             </mat-radio-button>
           </mat-radio-group>
         </div>
+        <div *ngIf="question.type === 'multiple'">
+          <mat-checkbox
+            *ngFor="let option of question.options"
+            [checked]="selectedOptions[question.id].includes(option)"
+            disabled
+          >
+            {{ option }}
+          </mat-checkbox>
+        </div>
         <div *ngIf="question.type === 'open'">
           <mat-form-field>
-            <input matInput type="text" [value]="openAnswer" disabled/>
+            <input matInput type="text" [value]="selectedOptions[question.id]" disabled/>
           </mat-form-field>
         </div>
-        <button mat-raised-button (click)="rollbackAnswer(question.id)">Rollback Answer</button>
+        <button mat-raised-button (click)="rollbackAnswer(question)">Rollback Answer</button>
       </mat-card>
     </div>
   </div>

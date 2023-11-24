@@ -4,8 +4,9 @@ import { Store } from '@ngrx/store';
 import { IAppState } from '../../store';
 import * as QuestionActions from '../../store/actions/question.actions';
 import { Router, ActivatedRoute } from '@angular/router';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap, map, filter } from 'rxjs/operators';
 import { createUniqId } from '../../utils/database.utils';
+import { IQuestion } from "../../interfaces/question.interface";
 
 @Component({
   selector: 'app-create-question',
@@ -13,7 +14,7 @@ import { createUniqId } from '../../utils/database.utils';
   styleUrls: ['./create-question.component.scss'],
 })
 export class CreateQuestionComponent implements OnInit {
-  questionForm: FormGroup;
+  questionForm!: FormGroup;
   isEditMode: boolean = false;
   questionId: string = '';
 
@@ -22,54 +23,51 @@ export class CreateQuestionComponent implements OnInit {
     private store: Store<IAppState>,
     private router: Router,
     private route: ActivatedRoute
-  ) {
-    this.questionForm = new FormGroup({
-      text: new FormControl(null, Validators.required),
-      type: new FormControl('single', Validators.required),
-      options: new FormArray([new FormControl()]),
-    });
+  ) {}
 
-    this.route.queryParams.subscribe(params => {
-      this.questionId = params['id'];
-      this.isEditMode = !!this.questionId;
+  ngOnInit(): void {
+    this.initForm();
 
-      if (this.isEditMode) {
-        this.store
-          .select('questions', 'entities', this.questionId)
-          .pipe(
-            map(question => {
-              if (question) {
-                this.questionForm.setValue({
-                  text: question.text,
-                  type: question.type,
-                  options: question.options || [''],
-                });
-              }
-            })
-          )
-          .subscribe();
-      }
+    this.route.params.pipe(
+      map(params => params['id']),
+      filter(Boolean),
+      switchMap(id => this.store.select('questions', 'entities', id)),
+      filter(Boolean),
+    ).subscribe(question => {
+      this.questionId = question.id;
+      this.initForm(question);
     });
   }
 
-  ngOnInit(): void {}
+  initForm(question?: IQuestion): void {
+    this.questionForm = new FormGroup({
+      text: new FormControl(question?.text, Validators.required),
+      type: new FormControl(question?.type || 'single', Validators.required),
+      options: new FormArray(
+        question?.options?.map(option => new FormControl(option))
+        || [new FormControl()],
+      ),
+    });
+  }
 
-  createOrUpdateQuestion(): void {
-    if (this.questionForm.valid) {
-      const question = {
-        ...this.questionForm.value,
-        dateCreated: new Date(),
-        id: this.isEditMode ? this.questionId : createUniqId(),
-      };
-
-      if (this.isEditMode) {
-        this.store.dispatch(QuestionActions.editQuestion({ id: this.questionId, question }));
-      } else {
-        this.store.dispatch(QuestionActions.addQuestion({ question }));
-      }
-
-      this.router.navigate(['/question-management']);
+  saveQuestion(): void {
+    if (!this.questionForm.valid) {
+      return;
     }
+
+    const question = {
+      ...this.questionForm.value,
+      dateCreated: new Date(),
+      id: this.isEditMode ? this.questionId : createUniqId(),
+    };
+
+    if (this.isEditMode) {
+      this.store.dispatch(QuestionActions.editQuestion({ id: this.questionId, question }));
+    } else {
+      this.store.dispatch(QuestionActions.addQuestion({ question }));
+    }
+
+    this.router.navigate(['/question-management']);
   }
 
   get options(): FormArray {
@@ -94,6 +92,4 @@ export class CreateQuestionComponent implements OnInit {
     }
     return true;
   }
-
-  protected readonly FormControl = FormControl;
 }

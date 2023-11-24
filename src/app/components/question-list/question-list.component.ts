@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../store';
-import * as AnswerActions from '../../store/actions/answers.actions';
 import { IQuestion } from '../../interfaces/question.interface';
 import { questionAdapter } from '../../store/reducers/question.reducer';
 import { map } from "rxjs/operators";
-import { createUniqId } from '../../utils/database.utils';
 import { FormBuilder } from '@angular/forms';
+import { editQuestion } from "../../store/actions/question.actions";
 
 @Component({
   selector: 'app-question-list',
@@ -18,8 +17,7 @@ export class QuestionListComponent {
   unansweredQuestions$: Observable<IQuestion[]>;
   answeredQuestions$: Observable<IQuestion[]>;
 
-  selectedOptions: { [id: string]: string } = {};
-  openAnswer: string = '';
+  selectedOptions: { [id: string]: string[] } = {};
 
   constructor(private store: Store<IAppState>, _formBuilder: FormBuilder) {
     this.unansweredQuestions$ = store.select('questions').pipe(
@@ -28,9 +26,16 @@ export class QuestionListComponent {
     );
 
     this.answeredQuestions$ = store.select('questions').pipe(
-      map(state => questionAdapter.getSelectors().selectAll(state)),
+      map(questions => questionAdapter.getSelectors().selectAll(questions)),
       map(questions => questions.filter(question => !!question.answer)),
+      tap(v => v.forEach(question => {
+        this.custom(question);
+      }))
     );
+  }
+
+  custom(question: IQuestion): void {
+    this.selectedOptions[question.id] = question.answer || [];
   }
 
   setCheckboxValue(questionId: string, option: string, target: EventTarget | null) {
@@ -38,45 +43,32 @@ export class QuestionListComponent {
     const currentValue = this.selectedOptions[questionId];
 
     if (!currentValue && checked) {
-      this.selectedOptions[questionId] = option;
+      this.selectedOptions[questionId] = [option];
       return;
     }
 
     if (!checked) {
-      this.selectedOptions[questionId] = currentValue
-        .split(',')
-        .filter(opt => opt !== option)
-        .join(',');
+      this.selectedOptions[questionId] = this.selectedOptions[questionId].filter(value => value !== option);
       return;
     }
 
-    this.selectedOptions[questionId] = `${currentValue},${option}`;
+    this.selectedOptions[questionId] = [...currentValue, option];
   }
-
-  showSelectedOptions(): void {
-    console.log(this.selectedOptions)
-  }
-
-  createAnswer(questionId: string): void {
-    const answer = {
-      questionId,
-      selectedOption: this.selectedOptions[questionId] || '',
-      openAnswer: this.openAnswer,
-      id: createUniqId(),
-    };
-    this.store.dispatch(AnswerActions.createAnswer({ answer }));
+  createAnswer(question: IQuestion): void {
+    this.store.dispatch(editQuestion({
+      id: question.id,
+      question: { ...question, answer: this.selectedOptions[question.id] },
+    }));
   }
 
   isAnswerValid(question: IQuestion): boolean {
-    if (question.type === 'single' || question.type === 'multiple') {
-      return this.selectedOptions[question.id] !== undefined && this.selectedOptions[question.id] !== null;
-    } else if (question.type === 'open') {
-      return this.openAnswer !== undefined && this.openAnswer.trim() !== '';
-    }
-    return true;
+    return this.selectedOptions[question.id] !== undefined && this.selectedOptions[question.id] !== null;
   }
 
-  rollbackAnswer(questionId: string): void {
-    this.store.dispatch(AnswerActions.rollbackAnswer({ questionId }));
+  rollbackAnswer(question: IQuestion): void {
+    this.store.dispatch(editQuestion({
+      id: question.id,
+      question: { ...question, answer: null },
+    }));
   }
 }

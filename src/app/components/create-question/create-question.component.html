@@ -1,4 +1,4 @@
-<form [formGroup]="questionForm" (ngSubmit)="createOrUpdateQuestion()" class="question-form">
+<form [formGroup]="questionForm" (ngSubmit)="saveQuestion()" class="question-form">
   <mat-form-field appearance="fill" class="form-field">
     <mat-label>Question Text:</mat-label>
     <input matInput type="text" formControlName="text" />
@@ -6,7 +6,7 @@
 
   <mat-form-field appearance="fill" class="form-field">
     <mat-label>Question Type:</mat-label>
-    <mat-select formControlName="type" [value]="questionForm.get('type')?.value">
+    <mat-select formControlName="type">
       <mat-option value="single">Single Choice</mat-option>
       <mat-option value="multiple">Multiple Choice</mat-option>
       <mat-option value="open">Open</mat-option>
@@ -31,14 +31,6 @@
         <mat-icon>add</mat-icon>
       </button>
     </div>
-  </div>
-
-  <div *ngIf="questionForm.get('type')?.value === 'open'" class="open-option">
-    <mat-form-field appearance="fill" class="form-field">
-      <mat-label>Answer Option:</mat-label>
-      <input matInput formControlName="options" placeholder="Enter your option here" />
-      <mat-error *ngIf="questionForm.get('options')?.invalid">Option is required.</mat-error>
-    </mat-form-field>
   </div>
 
   <button mat-raised-button type="submit" class="submit-btn" [disabled]="!questionForm.valid || !areOptionsValid()">

@@ -8,7 +8,6 @@ import { EffectsModule } from '@ngrx/effects';
 
 import { QuestionManagementComponent } from './components/question-management/question-management.component';
 import { CreateQuestionComponent } from './components/create-question/create-question.component';
-import { EditQuestionComponent } from './components/edit-question/edit-question.component';
 import { QuestionListComponent } from './components/question-list/question-list.component';
 
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -25,7 +24,6 @@ import { MatListModule } from '@angular/material/list';
 
 import { reducers } from "./store";
 import { QuestionEffects } from "./store/effects/question.effects";
-import { AnswersEffects } from './store/effects/answers.effects';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
@@ -33,14 +31,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     AppComponent,
     QuestionManagementComponent,
     CreateQuestionComponent,
-    EditQuestionComponent,
     QuestionListComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     StoreModule.forRoot(reducers, {}),
-    EffectsModule.forRoot([QuestionEffects, AnswersEffects]),
+    EffectsModule.forRoot([QuestionEffects]),
     ReactiveFormsModule,
     FormsModule,
     BrowserAnimationsModule,
