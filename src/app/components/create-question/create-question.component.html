@@ -1,0 +1,41 @@
+<form [formGroup]="questionForm" (ngSubmit)="saveQuestion()" class="question-form">
+  <mat-form-field appearance="fill" class="form-field">
+    <mat-label>Question Text:</mat-label>
+    <input matInput type="text" formControlName="text" />
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="form-field">
+    <mat-label>Question Type:</mat-label>
+    <mat-select formControlName="type">
+      <mat-option value="single">Single Choice</mat-option>
+      <mat-option value="multiple">Multiple Choice</mat-option>
+      <mat-option value="open">Open</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div *ngIf="questionForm.get('type')?.value === 'multiple' || questionForm.get('type')?.value === 'single'">
+    <div formArrayName="options" class="options-container">
+      <div *ngFor="let optionControl of options.controls; let i = index" class="option">
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>Answer Options:</mat-label>
+          <input matInput [formControlName]="i" placeholder="Enter your option here" />
+          <button *ngIf="options.length > 2" matSuffix mat-icon-button aria-label="Clear" (click)="removeOption(i)">
+            <mat-icon>close</mat-icon>
+          </button>
+          <mat-error *ngIf="getOptionControl(i)?.invalid">Option is required.</mat-error>
+        </mat-form-field>
+      </div>
+      <mat-hint class="option-hint">At least 2 options required</mat-hint>
+      <button class="option-btn" type="button" matSuffix mat-raised-button aria-label="Add" (click)="addOption()">
+        Add Option
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <button mat-raised-button type="submit" class="submit-btn" [disabled]="!questionForm.valid || !areOptionsValid()">
+    {{ isEditMode ? 'Submit Changes' : 'Create Question' }}
+  </button>
+</form>
+
+<button mat-button routerLink="/question-management" class="back-btn">Back to Question Management</button>

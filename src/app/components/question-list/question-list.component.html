@@ -1,0 +1,66 @@
+<div class="lists-container">
+  <div class="unanswered-list">
+    <h2>Unanswered Questions</h2>
+    <div *ngFor="let question of unansweredQuestions$ | async">
+      <mat-card class="question-card">
+        <p><b>{{ question.text }}</b></p>
+        <div *ngIf="question.type === 'single'">
+          <mat-radio-group [(ngModel)]="selectedOptions[question.id]">
+            <mat-radio-button *ngFor="let option of question.options" [value]="option">
+              {{ option }}
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div *ngIf="question.type === 'multiple'">
+          <mat-checkbox
+            *ngFor="let option of question.options"
+            (click)="setCheckboxValue(question.id, option, $event.target)"
+          >
+            {{ option }}
+          </mat-checkbox>
+        </div>
+        <div *ngIf="question.type === 'open'">
+          <mat-form-field class="question-card-open-wrapper">
+            <input matInput type="text" [(ngModel)]="selectedOptions[question.id]"/>
+          </mat-form-field>
+        </div>
+        <button mat-raised-button (click)="createAnswer(question)" [disabled]="!isAnswerValid(question)">
+          Save Answer
+        </button>
+      </mat-card>
+    </div>
+  </div>
+  <div class="answered-list">
+    <h2>Answered Questions</h2>
+    <div *ngFor="let question of answeredQuestions$ | async">
+      <mat-card class="question-card">
+        <p>{{ question.text }}</p>
+        <div *ngIf="question.type === 'single'">
+          <mat-radio-group [ngModel]="selectedOptions[question.id][0]" disabled>
+            <mat-radio-button
+              *ngFor="let option of question.options"
+              [value]="option"
+            >
+              {{ option }}
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div *ngIf="question.type === 'multiple'">
+          <mat-checkbox
+            *ngFor="let option of question.options"
+            [checked]="selectedOptions[question.id].includes(option)"
+            disabled
+          >
+            {{ option }}
+          </mat-checkbox>
+        </div>
+        <div *ngIf="question.type === 'open'">
+          <mat-form-field class="question-card-open-wrapper">
+            <input matInput type="text" [value]="selectedOptions[question.id]" disabled/>
+          </mat-form-field>
+        </div>
+        <button mat-raised-button (click)="rollbackAnswer(question)">Rollback Answer</button>
+      </mat-card>
+    </div>
+  </div>
+</div>

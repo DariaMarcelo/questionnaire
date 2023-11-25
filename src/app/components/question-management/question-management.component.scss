@@ -1,0 +1,47 @@
+.question-card {
+  max-width: 300px;
+  margin: 0 10px 20px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #fff;
+  box-shadow: 0 0 5px #ccc;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    box-shadow: 0 0 10px #ccc;
+  }
+
+  &-btn {
+    margin-top: 10px;
+    background-color: #444;
+    color: #fff;
+    transition: background-color 0.3s ease-in-out;
+
+    &:hover {
+      background-color: #222;
+    }
+  }
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -10px -20px 20px;
+}
+
+mat-card-actions {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.question-card-btn-create {
+  margin-top: 20px;
+  margin-left: 20px;
+  transition: background-color 0.3s ease-in-out;
+
+  &:hover {
+    background-color: #222;
+  }
+}
