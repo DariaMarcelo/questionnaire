@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Component, OnDestroy } from '@angular/core';
+import { Observable, Subscription, tap } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../store';
 import { IQuestion } from '../../interfaces/question.interface';
@@ -13,13 +13,14 @@ import { editQuestion } from "../../store/actions/question.actions";
   templateUrl: './question-list.component.html',
   styleUrls: ['./question-list.component.scss'],
 })
-export class QuestionListComponent {
+export class QuestionListComponent implements OnDestroy {
   unansweredQuestions$: Observable<IQuestion[]>;
   answeredQuestions$: Observable<IQuestion[]>;
+  private answeredQuestionsSubscription: Subscription = new Subscription();
 
   selectedOptions: { [id: string]: string[] } = {};
 
-  constructor(private store: Store<IAppState>, _formBuilder: FormBuilder) {
+  constructor(private store: Store<IAppState>, private formBuilder: FormBuilder) {
     this.unansweredQuestions$ = store.select('questions').pipe(
       map(state => questionAdapter.getSelectors().selectAll(state)),
       map(questions => questions.filter(question => !question.answer)),
@@ -32,8 +33,15 @@ export class QuestionListComponent {
         this.custom(question);
       }))
     );
+
+    this.answeredQuestionsSubscription = this.answeredQuestions$.subscribe();
   }
 
+  ngOnDestroy(): void {
+    if (this.answeredQuestionsSubscription) {
+      this.answeredQuestionsSubscription.unsubscribe();
+    }
+  }
   custom(question: IQuestion): void {
     this.selectedOptions[question.id] = question.answer || [];
   }

@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, OnDestroy } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../store';
 import * as QuestionActions from '../../store/actions/question.actions';
 import { IQuestion } from '../../interfaces/question.interface';
 import { questionAdapter } from '../../store/reducers/question.reducer';
-import { map } from "rxjs/operators";
+import { map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -13,8 +13,9 @@ import { Router, ActivatedRoute } from '@angular/router';
   templateUrl: './question-management.component.html',
   styleUrls: ['./question-management.component.scss'],
 })
-export class QuestionManagementComponent {
+export class QuestionManagementComponent implements OnDestroy {
   questions$: Observable<IQuestion[]>;
+  private questionsSubscription: Subscription = new Subscription();
 
   constructor(
     private store: Store<IAppState>,
@@ -24,6 +25,14 @@ export class QuestionManagementComponent {
     this.questions$ = store.select('questions').pipe(
       map(state => state && state.ids ? questionAdapter.getSelectors().selectAll(state) : []),
     );
+
+    this.questionsSubscription = this.questions$.subscribe();
+  }
+
+  ngOnDestroy(): void {
+    if (this.questionsSubscription) {
+      this.questionsSubscription.unsubscribe();
+    }
   }
 
   deleteQuestion(id: string): void {
