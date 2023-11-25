@@ -5,7 +5,7 @@ import { IAppState } from '../../store';
 import * as QuestionActions from '../../store/actions/question.actions';
 import { Router, ActivatedRoute } from '@angular/router';
 import { switchMap, map, filter } from 'rxjs/operators';
-import { createUniqId } from '../../utils/database.utils';
+import { v4 as uuidv4 } from 'uuid';
 import { IQuestion } from "../../interfaces/question.interface";
 import { Subscription } from "rxjs";
 
@@ -66,7 +66,7 @@ export class CreateQuestionComponent implements OnInit, OnDestroy {
     const question = {
       ...this.questionForm.value,
       dateCreated: new Date(),
-      id: this.isEditMode ? this.questionId : createUniqId(),
+      id: this.isEditMode ? this.questionId : uuidv4(),
     };
 
     if (this.isEditMode) {
